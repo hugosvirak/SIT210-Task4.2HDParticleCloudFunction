@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<h2>Remote Traffic Light Controller</h2>
+
+<form id="traffic_light_controller_request" onsubmit="sendMessage()">
+  <input type="radio" id="redLed" name="led" value="led">
+  <label for="redLed">RED LED</label>
+  </br>
+  
+  <input type="radio" id="greenLed" name="led" value="led">
+  <label for="greenLed">GREEN LED</label>
+  </br>
+  
+  <input type="radio" id="blueLed" name="led" value="led">
+  <label for="blueLed">BLUE LED</label>
+
+  </br>
+  </br>  
+  
+  <label for="acessToken">Particle Access token:</label><br>
+  <input type="text" id="acessToken" name="acessToken" placeholder="1234567"><br><br>
+  <input type="submit" value="Toggle">
+</form>
+
+<p id="messages"></p>
+
+
+<script>
+
+function handleForm(event) { event.preventDefault(); } 
+document.getElementById("traffic_light_controller_request").addEventListener('submit', handleForm);
+
+function sendMessage() {
+	console.log("SendMessage");
+
+	var http = new XMLHttpRequest();
+    http.onreadystatechange = function() { 
+        if (http.readyState == 4) {
+			document.getElementById("messages").innerHTML = "Loading";
+		}
+        if (http.readyState == 4) {
+			document.getElementById("messages").innerHTML = "Response status: " + http.status + ". Response text: " + http.responseText;
+		}
+    } 
+	
+	var ledToToggle = "";
+	if(document.getElementById('redLed').checked) {
+		ledToToggle = "red";
+	} else if (document.getElementById('greenLed').checked) {
+		ledToToggle = "green";
+	} else if (document.getElementById('blueLed').checked) {
+		ledToToggle = "blue";
+	}
+
+	var address = "https://api.particle.io/v1/devices/e00fce687746e626dd923279/toggleLight";
+    http.open("POST", address, true);
+	http.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+
+	var data = "access_token=" + document.getElementById("acessToken").value + "&args=" + ledToToggle 
+    http.send(data);
+}
+
+</script> 
+
+</body>
+</html>
+
